@@ -35,8 +35,12 @@
 %%_* Internal ==================================================================
 
 is_in([])                              -> false;
-is_in([#xmlElement{name=Name} | Rest]) ->
-  case string:to_lower(atom_to_list(Name)) =:= "signature" of
+is_in([#xmlElement{name=QName} | Rest]) ->
+  Name = case string:tokens(atom_to_list(QName), ":") of
+           [N] -> N;
+           [_Ns, N] -> N
+         end,
+  case string:to_lower(Name) =:= "signature" of
     true  -> true;
     false -> is_in(Rest)
   end;
